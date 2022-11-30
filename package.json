@@ -1,16 +1,13 @@
 {
-  "name": "@noble/secp256k1",
+  "name": "@dashincubator/secp256k1",
   "version": "1.7.0",
-  "description": "Fastest JS implementation of secp256k1. Independently audited, high-security, 0-dependency ECDSA & Schnorr signatures",
+  "description": "Browser, Node, and bundler compatible release of @noble/secp256k1. Independently audited, high-security, 0-dependency ECDSA & Schnorr signatures",
   "files": [
-    "lib"
+    "secp256k1.js"
   ],
-  "main": "lib/index.js",
-  "module": "lib/esm/index.js",
+  "main": "secp256k1.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.esm.json",
-    "build:release": "rollup -c rollup.config.js",
     "lint": "prettier --print-width 100 --single-quote --check index.ts",
     "format": "prettier --print-width 100 --single-quote --write index.ts",
     "test": "jest",
@@ -21,7 +18,7 @@
   "homepage": "https://paulmillr.com/noble/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paulmillr/noble-secp256k1.git"
+    "url": "https://github.com/dashhive/secp256k1.git"
   },
   "license": "MIT",
   "browser": {
@@ -61,23 +58,10 @@
     "security",
     "noble"
   ],
-  "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/esm/index.js",
-      "default": "./lib/index.js"
-    }
-  },
   "jest": {
     "testRegex": "/test/.*?\\.ts",
     "transform": {
       "^.+\\.ts$": "ts-jest"
     }
-  },
-  "funding": [
-    {
-      "type": "individual",
-      "url": "https://paulmillr.com/funding/"
-    }
-  ]
+  }
 }
