@@ -1,4 +1,10 @@
-# noble-secp256k1 ![Node CI](https://github.com/paulmillr/noble-secp256k1/workflows/Node%20CI/badge.svg) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+# @dashincubator/secp256k1 ![Node CI](https://github.com/paulmillr/noble-secp256k1/workflows/Node%20CI/badge.svg) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+
+Browser, Node, and bundler compatible release of [@noble/secp256k1](https://github.com/paulmillr/noble-secp256k1).
+
+```html
+<script src="https://unpkg.com/@dashincubator/secp256k1@1.7.0/secp256k1.js"></script>
+```
 
 [Fastest](#speed) JS implementation of [secp256k1](https://www.secg.org/sec2-v2.pdf),
 an elliptic curve that could be used for asymmetric encryption,
@@ -10,15 +16,15 @@ ECDH key agreement protocol and signature schemes. Supports deterministic **ECDS
 
 > **noble-crypto** — high-security, easily auditable set of contained cryptographic libraries and tools.
 
-- No dependencies, one small file
-- Easily auditable TypeScript/JS code
-- Supported in all major browsers and stable node.js versions
-- All releases are signed with PGP keys
-- Check out [homepage](https://paulmillr.com/noble/) & all libraries:
-  [secp256k1](https://github.com/paulmillr/noble-secp256k1),
-  [ed25519](https://github.com/paulmillr/noble-ed25519),
-  [bls12-381](https://github.com/paulmillr/noble-bls12-381),
-  [hashes](https://github.com/paulmillr/noble-hashes)
+-   No dependencies, one small file
+-   Easily auditable TypeScript/JS code
+-   Supported in all major browsers and stable node.js versions
+-   All releases are signed with PGP keys
+-   Check out [homepage](https://paulmillr.com/noble/) & all libraries:
+    [secp256k1](https://github.com/paulmillr/noble-secp256k1),
+    [ed25519](https://github.com/paulmillr/noble-ed25519),
+    [bls12-381](https://github.com/paulmillr/noble-bls12-381),
+    [hashes](https://github.com/paulmillr/noble-hashes)
 
 ## Usage
 
@@ -29,54 +35,57 @@ Use NPM in node.js / browser, or include single file from
 
 ```js
 // Common.js and ECMAScript Modules (ESM)
-import * as secp from '@noble/secp256k1';
+import * as secp from "@noble/secp256k1";
 // If you're using single file, use global variable instead: `window.nobleSecp256k1`
 
 // Supports both async and sync methods, see docs
 (async () => {
-  // keys, messages & other inputs can be Uint8Arrays or hex strings
-  // Uint8Array.from([0xde, 0xad, 0xbe, 0xef]) === 'deadbeef'
-  const privKey = secp.utils.randomPrivateKey();
-  const pubKey = secp.getPublicKey(privKey);
-  const msgHash = await secp.utils.sha256('hello world');
-  const signature = await secp.sign(msgHash, privKey);
-  const isValid = secp.verify(signature, msgHash, pubKey);
+    // keys, messages & other inputs can be Uint8Arrays or hex strings
+    // Uint8Array.from([0xde, 0xad, 0xbe, 0xef]) === 'deadbeef'
+    const privKey = secp.utils.randomPrivateKey();
+    const pubKey = secp.getPublicKey(privKey);
+    const msgHash = await secp.utils.sha256("hello world");
+    const signature = await secp.sign(msgHash, privKey);
+    const isValid = secp.verify(signature, msgHash, pubKey);
 
-  // Schnorr signatures
-  const rpub = secp.schnorr.getPublicKey(privKey);
-  const rsignature = await secp.schnorr.sign(message, privKey);
-  const risValid = await secp.schnorr.verify(rsignature, message, rpub);
+    // Schnorr signatures
+    const rpub = secp.schnorr.getPublicKey(privKey);
+    const rsignature = await secp.schnorr.sign(message, privKey);
+    const risValid = await secp.schnorr.verify(rsignature, message, rpub);
 })();
 ```
 
 To use the module with [Deno](https://deno.land),
 you will need [import map](https://deno.land/manual/linking_to_external_code/import_maps):
 
-- `deno run --import-map=imports.json app.ts`
-- app.ts: `import * as secp from "https://deno.land/x/secp256k1/mod.ts";`
-- imports.json: `{"imports": {"crypto": "https://deno.land/std@0.153.0/node/crypto.ts"}}`
+-   `deno run --import-map=imports.json app.ts`
+-   app.ts: `import * as secp from "https://deno.land/x/secp256k1/mod.ts";`
+-   imports.json: `{"imports": {"crypto": "https://deno.land/std@0.153.0/node/crypto.ts"}}`
 
 ## API
 
-- [`getPublicKey(privateKey)`](#getpublickeyprivatekey)
-- [`sign(msgHash, privateKey)`](#signmsghash-privatekey)
-- [`verify(signature, msgHash, publicKey)`](#verifysignature-msghash-publickey)
-- [`getSharedSecret(privateKeyA, publicKeyB)`](#getsharedsecretprivatekeya-publickeyb)
-- [`recoverPublicKey(hash, signature, recovery)`](#recoverpublickeyhash-signature-recovery)
-- [`schnorr.getPublicKey(privateKey)`](#schnorrgetpublickeyprivatekey)
-- [`schnorr.sign(message, privateKey)`](#schnorrsignmessage-privatekey)
-- [`schnorr.verify(signature, message, publicKey)`](#schnorrverifysignature-message-publickey)
-- [Utilities](#utilities)
+-   [`getPublicKey(privateKey)`](#getpublickeyprivatekey)
+-   [`sign(msgHash, privateKey)`](#signmsghash-privatekey)
+-   [`verify(signature, msgHash, publicKey)`](#verifysignature-msghash-publickey)
+-   [`getSharedSecret(privateKeyA, publicKeyB)`](#getsharedsecretprivatekeya-publickeyb)
+-   [`recoverPublicKey(hash, signature, recovery)`](#recoverpublickeyhash-signature-recovery)
+-   [`schnorr.getPublicKey(privateKey)`](#schnorrgetpublickeyprivatekey)
+-   [`schnorr.sign(message, privateKey)`](#schnorrsignmessage-privatekey)
+-   [`schnorr.verify(signature, message, publicKey)`](#schnorrverifysignature-message-publickey)
+-   [Utilities](#utilities)
 
 ##### `getPublicKey(privateKey)`
 
 ```typescript
-function getPublicKey(privateKey: Uint8Array | string | bigint, isCompressed = false): Uint8Array;
+function getPublicKey(
+    privateKey: Uint8Array | string | bigint,
+    isCompressed = false
+): Uint8Array;
 ```
 
 Creates public key for the corresponding private key. The default is full 65-byte key.
 
-- `isCompressed = false` determines whether to return compact (33-byte), or full (65-byte) key.
+-   `isCompressed = false` determines whether to return compact (33-byte), or full (65-byte) key.
 
 Internally, it does `Point.BASE.multiply(privateKey)`. If you need actual `Point` instead of
 `Uint8Array`, use `Point.fromPrivateKey(privateKey)`.
@@ -85,125 +94,133 @@ Internally, it does `Point.BASE.multiply(privateKey)`. If you need actual `Point
 
 ```typescript
 function sign(
-  msgHash: Uint8Array | string,
-  privateKey: Uint8Array | string,
-  opts?: Options
+    msgHash: Uint8Array | string,
+    privateKey: Uint8Array | string,
+    opts?: Options
 ): Promise<Uint8Array>;
 function sign(
-  msgHash: Uint8Array | string,
-  privateKey: Uint8Array | string,
-  opts?: Options
+    msgHash: Uint8Array | string,
+    privateKey: Uint8Array | string,
+    opts?: Options
 ): Promise<[Uint8Array, number]>;
 ```
 
 Generates low-s deterministic ECDSA signature as per RFC6979.
 
-- `msgHash: Uint8Array | string` - 32-byte message hash which would be signed
-- `privateKey: Uint8Array | string | bigint` - private key which will sign the hash
-- `options?: Options` - _optional_ object related to signature value and format with following keys:
-  - `recovered: boolean = false` - whether the recovered bit should be included in the result. In this case, the result would be an array of two items.
-  - `canonical: boolean = true` - whether a signature `s` should be no more than 1/2 prime order.
-    `true` (default) makes signatures compatible with libsecp256k1,
-    `false` makes signatures compatible with openssl
-  - `der: boolean = true` - whether the returned signature should be in DER format. If `false`, it would be in Compact format (32-byte r + 32-byte s)
-  - `extraEntropy: Uint8Array | string | true` - additional entropy `k'` for deterministic signature, follows section 3.6 of RFC6979. When `true`, it would automatically be filled with 32 bytes of cryptographically secure entropy. **Strongly recommended** to pass `true` to improve security:
-    - Schnorr signatures are doing it every time
-    - It would help a lot in case there is an error somewhere in `k` generation. Exposing `k` could leak private keys
-    - If the entropy generator is broken, signatures would be the same as they are without the option
-    - Signatures with extra entropy would have different `r` / `s`, which means they
-      would still be valid, but may break some test vectors if you're cross-testing against other libs
+-   `msgHash: Uint8Array | string` - 32-byte message hash which would be signed
+-   `privateKey: Uint8Array | string | bigint` - private key which will sign the hash
+-   `options?: Options` - _optional_ object related to signature value and format with following keys:
+    -   `recovered: boolean = false` - whether the recovered bit should be included in the result. In this case, the result would be an array of two items.
+    -   `canonical: boolean = true` - whether a signature `s` should be no more than 1/2 prime order.
+        `true` (default) makes signatures compatible with libsecp256k1,
+        `false` makes signatures compatible with openssl
+    -   `der: boolean = true` - whether the returned signature should be in DER format. If `false`, it would be in Compact format (32-byte r + 32-byte s)
+    -   `extraEntropy: Uint8Array | string | true` - additional entropy `k'` for deterministic signature, follows section 3.6 of RFC6979. When `true`, it would automatically be filled with 32 bytes of cryptographically secure entropy. **Strongly recommended** to pass `true` to improve security:
+        -   Schnorr signatures are doing it every time
+        -   It would help a lot in case there is an error somewhere in `k` generation. Exposing `k` could leak private keys
+        -   If the entropy generator is broken, signatures would be the same as they are without the option
+        -   Signatures with extra entropy would have different `r` / `s`, which means they
+            would still be valid, but may break some test vectors if you're cross-testing against other libs
 
 The function is asynchronous because we're utilizing built-in HMAC API to not rely on dependencies.
 
 ```ts
 (async () => {
-  // Signatures with improved security
-  const signatureE = await secp.sign(msgHash, privKey, { extraEntropy: true });
-  // Malleable signatures, but compatible with openssl
-  const signatureM = await secp.sign(msgHash, privKey, { canonical: false });
+    // Signatures with improved security
+    const signatureE = await secp.sign(msgHash, privKey, {
+        extraEntropy: true,
+    });
+    // Malleable signatures, but compatible with openssl
+    const signatureM = await secp.sign(msgHash, privKey, { canonical: false });
 })();
 ```
 
 ```typescript
 function signSync(
-  msgHash: Uint8Array | string,
-  privateKey: Uint8Array | string,
-  opts?: Options
+    msgHash: Uint8Array | string,
+    privateKey: Uint8Array | string,
+    opts?: Options
 ): Uint8Array | [Uint8Array, number];
 ```
 
 `signSync` counterpart could also be used, you need to set `utils.hmacSha256Sync` to a function with signature `key: Uint8Array, ...messages: Uint8Array[]) => Uint8Array`. Example with `noble-hashes` package:
 
 ```ts
-import { hmac } from '@noble/hashes/hmac';
-import { sha256 } from '@noble/hashes/sha256';
-secp256k1.utils.hmacSha256Sync = (key, ...msgs) => hmac(sha256, key, secp256k1.utils.concatBytes(...msgs))
-secp256k1.utils.sha256Sync = (...msgs) => sha256(secp256k1.utils.concatBytes(...msgs))
+import { hmac } from "@noble/hashes/hmac";
+import { sha256 } from "@noble/hashes/sha256";
+secp256k1.utils.hmacSha256Sync = (key, ...msgs) =>
+    hmac(sha256, key, secp256k1.utils.concatBytes(...msgs));
+secp256k1.utils.sha256Sync = (...msgs) =>
+    sha256(secp256k1.utils.concatBytes(...msgs));
 // Can be used now
 secp256k1.signSync(msgHash, privateKey);
-schnorr.signSync(message, privateKey)
+schnorr.signSync(message, privateKey);
 ```
 
 ##### `verify(signature, msgHash, publicKey)`
 
 ```typescript
 function verify(
-  signature: Uint8Array | string,
-  msgHash: Uint8Array | string,
-  publicKey: Uint8Array | string
+    signature: Uint8Array | string,
+    msgHash: Uint8Array | string,
+    publicKey: Uint8Array | string
 ): boolean;
-function verify(signature: Signature, msgHash: Uint8Array | string, publicKey: Point): boolean;
+function verify(
+    signature: Signature,
+    msgHash: Uint8Array | string,
+    publicKey: Point
+): boolean;
 ```
 
-- `signature: Uint8Array | string | { r: bigint, s: bigint }` - object returned by the `sign` function
-- `msgHash: Uint8Array | string` - message hash that needs to be verified
-- `publicKey: Uint8Array | string | Point` - e.g. that was generated from `privateKey` by `getPublicKey`
-- `options?: Options` - _optional_ object related to signature value and format
-  - `strict: boolean = true` - whether a signature `s` should be no more than 1/2 prime order.
-    `true` (default) makes signatures compatible with libsecp256k1,
-    `false` makes signatures compatible with openssl
-- Returns `boolean`: `true` if `signature == hash`; otherwise `false`
+-   `signature: Uint8Array | string | { r: bigint, s: bigint }` - object returned by the `sign` function
+-   `msgHash: Uint8Array | string` - message hash that needs to be verified
+-   `publicKey: Uint8Array | string | Point` - e.g. that was generated from `privateKey` by `getPublicKey`
+-   `options?: Options` - _optional_ object related to signature value and format
+    -   `strict: boolean = true` - whether a signature `s` should be no more than 1/2 prime order.
+        `true` (default) makes signatures compatible with libsecp256k1,
+        `false` makes signatures compatible with openssl
+-   Returns `boolean`: `true` if `signature == hash`; otherwise `false`
 
 ##### `getSharedSecret(privateKeyA, publicKeyB)`
 
 ```typescript
 function getSharedSecret(
-  privateKeyA: Uint8Array | string | bigint,
-  publicKeyB: Uint8Array | string | Point,
-  isCompressed = false
+    privateKeyA: Uint8Array | string | bigint,
+    publicKeyB: Uint8Array | string | Point,
+    isCompressed = false
 ): Uint8Array;
 ```
 
 Computes ECDH (Elliptic Curve Diffie-Hellman) shared secret between a private key and a different public key.
 
-- To get Point instance, use `Point.fromHex(publicKeyB).multiply(privateKeyA)`
-- `isCompressed = false` determines whether to return compact (33-byte), or full (65-byte) key
-- If you have one public key you'll be creating lots of secrets against,
-  consider massive speed-up by using precomputations:
+-   To get Point instance, use `Point.fromHex(publicKeyB).multiply(privateKeyA)`
+-   `isCompressed = false` determines whether to return compact (33-byte), or full (65-byte) key
+-   If you have one public key you'll be creating lots of secrets against,
+    consider massive speed-up by using precomputations:
 
-  ```js
-  const pub = secp.utils.precompute(8, publicKeyB);
-  // Use pub everywhere instead of publicKeyB
-  getSharedSecret(privKey, pub); // Now 12x faster
-  ```
+    ```js
+    const pub = secp.utils.precompute(8, publicKeyB);
+    // Use pub everywhere instead of publicKeyB
+    getSharedSecret(privKey, pub); // Now 12x faster
+    ```
 
 ##### `recoverPublicKey(hash, signature, recovery)`
 
 ```typescript
 function recoverPublicKey(
-  msgHash: Uint8Array | string,
-  signature: Uint8Array | string,
-  recovery: number,
-  isCompressed = false
+    msgHash: Uint8Array | string,
+    signature: Uint8Array | string,
+    recovery: number,
+    isCompressed = false
 ): Uint8Array | undefined;
 ```
 
 Recovers public key from message hash, signature & recovery bit. The default is full 65-byte key.
 
-- `msgHash: Uint8Array | string` - message hash which would be signed
-- `signature: Uint8Array | string | { r: bigint, s: bigint }` - object returned by the `sign` function
-- `recovery: number` - recovery bit returned by `sign` with `recovered` option
-- `isCompressed = false` determines whether to return compact (33-byte), or full (65-byte) key
+-   `msgHash: Uint8Array | string` - message hash which would be signed
+-   `signature: Uint8Array | string | { r: bigint, s: bigint }` - object returned by the `sign` function
+-   `recovery: number` - recovery bit returned by `sign` with `recovered` option
+-   `isCompressed = false` determines whether to return compact (33-byte), or full (65-byte) key
 
 Public key is generated by doing scalar multiplication of a base Point(x, y) by a fixed
 integer. The result is another `Point(x, y)` which we will by default encode to hex Uint8Array.
@@ -224,33 +241,33 @@ _Warning:_ it is incompatible with non-schnorr pubkey. Specifically, its _y_ coo
 
 ```typescript
 function schnorrSign(
-  message: Uint8Array | string,
-  privateKey: Uint8Array | string,
-  auxilaryRandom?: Uint8Array
+    message: Uint8Array | string,
+    privateKey: Uint8Array | string,
+    auxilaryRandom?: Uint8Array
 ): Promise<Uint8Array>;
 ```
 
 Generates Schnorr signature as per BIP0340. Asynchronous, so use `await`.
 
-- `message: Uint8Array | string` - message (not hash) which would be signed
-- `privateKey: Uint8Array | string | bigint` - private key which will sign the hash
-- `auxilaryRandom?: Uint8Array` — optional 32 random bytes. By default, the method gathers cryptogarphically secure entropy
-- Returns Schnorr signature in Hex format.
+-   `message: Uint8Array | string` - message (not hash) which would be signed
+-   `privateKey: Uint8Array | string | bigint` - private key which will sign the hash
+-   `auxilaryRandom?: Uint8Array` — optional 32 random bytes. By default, the method gathers cryptogarphically secure entropy
+-   Returns Schnorr signature in Hex format.
 
 ##### `schnorr.verify(signature, message, publicKey)`
 
 ```typescript
 function schnorrVerify(
-  signature: Uint8Array | string,
-  message: Uint8Array | string,
-  publicKey: Uint8Array | string
+    signature: Uint8Array | string,
+    message: Uint8Array | string,
+    publicKey: Uint8Array | string
 ): boolean;
 ```
 
-- `signature: Uint8Array | string | { r: bigint, s: bigint }` - object returned by the `sign` function
-- `message: Uint8Array | string` - message (not hash) that needs to be verified
-- `publicKey: Uint8Array | string | Point` - e.g. that was generated from `privateKey` by `getPublicKey`
-- Returns `boolean`: `true` if `signature == hash`; otherwise `false`
+-   `signature: Uint8Array | string | { r: bigint, s: bigint }` - object returned by the `sign` function
+-   `message: Uint8Array | string` - message (not hash) that needs to be verified
+-   `publicKey: Uint8Array | string | Point` - e.g. that was generated from `privateKey` by `getPublicKey`
+-   Returns `boolean`: `true` if `signature == hash`; otherwise `false`
 
 #### Utilities
 
@@ -348,7 +365,7 @@ secp256k1.Signature {
 Noble is production-ready.
 
 1. The library has been audited by an independent security firm cure53: [PDF](https://cure53.de/pentest-report_noble-lib.pdf). See [changes since audit](https://github.com/paulmillr/noble-secp256k1/compare/1.2.0..main).
-   - The audit has been [crowdfunded](https://gitcoin.co/grants/2451/audit-of-noble-secp256k1-cryptographic-library) by community with help of [Umbra.cash](https://umbra.cash).
+    - The audit has been [crowdfunded](https://gitcoin.co/grants/2451/audit-of-noble-secp256k1-cryptographic-library) by community with help of [Umbra.cash](https://umbra.cash).
 2. The library has also been fuzzed by [Guido Vranken's cryptofuzz](https://github.com/guidovranken/cryptofuzz). You can run the fuzzer by yourself to check it.
 
 We're using built-in JS `BigInt`, which is potentially vulnerable to [timing attacks](https://en.wikipedia.org/wiki/Timing_attack) as [per official spec](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#cryptography). But, _JIT-compiler_ and _Garbage Collector_ make "constant time" extremely hard to achieve in a scripting language. Which means _any other JS library doesn't use constant-time bigints_. Including bn.js or anything else. Even statically typed Rust, a language without GC, [makes it harder to achieve constant-time](https://www.chosenplaintext.ca/open-source/rust-timing-shield/security) for some cases. If your goal is absolute security, don't use any JS lib — including bindings to native ones. Use low-level libraries & languages. Nonetheless we've hardened implementation of ec curve multiplication to be algorithmically constant time.
