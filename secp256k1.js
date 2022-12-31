@@ -1088,16 +1088,17 @@
             return numTo32b(num);
         },
         randomBytes: (bytesLength = 32) => {
-            if (crypto.web) {
-                return crypto.web.getRandomValues(new Uint8Array(bytesLength));
+            let Crypto = globalThis.crypto;
+            if (!Crypto) {
+                Crypto = require('./shims/node-crypto.js');
             }
-            else if (crypto.node) {
-                const { randomBytes } = crypto.node;
-                return Uint8Array.from(randomBytes(bytesLength));
-            }
-            else {
+            if (!Crypto) {
                 throw new Error("The environment doesn't have randomBytes function");
             }
+
+            let buf = new Uint8Array(len);
+            Crypto.getRandomValues(buf);
+            return buf;
         },
         randomPrivateKey: () => {
             return utils.hashToPrivateKey(utils.randomBytes(40));
@@ -1118,21 +1119,25 @@
             }
         },
         hmacSha256: async (key, ...messages) => {
-            if (crypto.web) {
-                const ckey = await crypto.web.subtle.importKey('raw', key, { name: 'HMAC', hash: { name: 'SHA-256' } }, false, ['sign']);
-                const message = concatBytes(...messages);
-                const buffer = await crypto.web.subtle.sign('HMAC', ckey, message);
-                return new Uint8Array(buffer);
+            let Crypto = globalThis.crypto;
+            if (!Crypto) {
+                Crypto = require('./shims/node-crypto.js');
             }
-            else if (crypto.node) {
-                const { createHmac } = crypto.node;
-                const hash = createHmac('sha256', key);
-                messages.forEach((m) => hash.update(m));
-                return Uint8Array.from(hash.digest());
+            if (!Crypto) {
+                throw new Error("The environment doesn't have crypto.subtle.sign function");
             }
-            else {
-                throw new Error("The environment doesn't have hmac-sha256 function");
-            }
+
+            let ckey = await Crypto.subtle.importKey(
+                "raw",
+                key,
+                { name: "HMAC", hash: { name: "SHA-256" } },
+                false,
+                ["sign"],
+            );
+            let message = concatBytes(...messages);
+            let buffer = await Crypto.subtle.sign("HMAC", ckey, message);
+
+            return new Uint8Array(buffer);
         },
         sha256Sync: undefined,
         hmacSha256Sync: undefined,

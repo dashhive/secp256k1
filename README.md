@@ -4,6 +4,9 @@ Browser, Node, and bundler compatible release of [@noble/secp256k1](https://gith
 
 ```html
 <script src="https://unpkg.com/@dashincubator/secp256k1@1.7.0/secp256k1.js"></script>
+<script>
+    let Secp256k1 = window.nobleSecp256k1;
+</script>
 ```
 
 [Fastest](#speed) JS implementation of [secp256k1](https://www.secg.org/sec2-v2.pdf),
