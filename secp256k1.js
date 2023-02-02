@@ -1096,7 +1096,7 @@
                 throw new Error("The environment doesn't have randomBytes function");
             }
 
-            let buf = new Uint8Array(len);
+            let buf = new Uint8Array(bytesLength);
             Crypto.getRandomValues(buf);
             return buf;
         },
