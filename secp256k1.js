@@ -1127,6 +1127,14 @@
                 throw new Error("The environment doesn't have crypto.subtle.sign function");
             }
 
+            let message = concatBytes(...messages);
+
+            if (!Crypto.subtle) {
+              let buf = Crypto.createHmac("sha256", key).update(message).digest();
+              return new Uint8Array(buf);
+            }
+
+
             let ckey = await Crypto.subtle.importKey(
                 "raw",
                 key,
@@ -1134,7 +1142,6 @@
                 false,
                 ["sign"],
             );
-            let message = concatBytes(...messages);
             let buffer = await Crypto.subtle.sign("HMAC", ckey, message);
 
             return new Uint8Array(buffer);
