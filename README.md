@@ -90,15 +90,26 @@ To use the module with [Deno](https://deno.land), you will need
 
 ## API
 
-- [`getPublicKey(privateKey)`](#getpublickeyprivatekey)
-- [`sign(msgHash, privateKey)`](#signmsghash-privatekey)
-- [`verify(signature, msgHash, publicKey)`](#verifysignature-msghash-publickey)
-- [`getSharedSecret(privateKeyA, publicKeyB)`](#getsharedsecretprivatekeya-publickeyb)
-- [`recoverPublicKey(hash, signature, recovery)`](#recoverpublickeyhash-signature-recovery)
-- [`schnorr.getPublicKey(privateKey)`](#schnorrgetpublickeyprivatekey)
-- [`schnorr.sign(message, privateKey)`](#schnorrsignmessage-privatekey)
-- [`schnorr.verify(signature, message, publicKey)`](#schnorrverifysignature-message-publickey)
-- [Utilities](#utilities)
+- [@dashincubator/secp256k1](#dashincubatorsecp256k1)
+    - [This fork is a standalone browser-compatible release of _noble_ crypto](#this-fork-is-a-standalone-browser-compatible-release-of-noble-crypto)
+  - [Install](#install)
+    - [Node, Bun, \& Bundlers](#node-bun--bundlers)
+    - [Browsers](#browsers)
+  - [Usage](#usage)
+  - [API](#api)
+        - [`getPublicKey(privateKey)`](#getpublickeyprivatekey)
+        - [`sign(msgHash, privateKey)`](#signmsghash-privatekey)
+        - [`verify(signature, msgHash, publicKey)`](#verifysignature-msghash-publickey)
+        - [`getSharedSecret(privateKeyA, publicKeyB)`](#getsharedsecretprivatekeya-publickeyb)
+        - [`recoverPublicKey(hash, signature, recovery)`](#recoverpublickeyhash-signature-recovery)
+        - [`schnorr.getPublicKey(privateKey)`](#schnorrgetpublickeyprivatekey)
+        - [`schnorr.sign(message, privateKey)`](#schnorrsignmessage-privatekey)
+        - [`schnorr.verify(signature, message, publicKey)`](#schnorrverifysignature-message-publickey)
+      - [Utilities](#utilities)
+  - [Security](#security)
+  - [Speed](#speed)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ##### `getPublicKey(privateKey)`
 
@@ -340,84 +351,44 @@ console.log(hex);
 
 ```typescript
 const utils: {
-  // Can take 40 or more bytes of uniform input e.g. from CSPRNG or KDF
-  // and convert them into private key, with the modulo bias being neglible.
-  // As per FIPS 186 B.1.1.
-  hashToPrivateKey: (hash: Hex) => Uint8Array;
-  // Returns `Uint8Array` of 32 cryptographically secure random bytes that can be used as private key
-  randomPrivateKey: () => Uint8Array;
-  // Checks private key for validity
-  isValidPrivateKey(privateKey: PrivKey): boolean;
-
-  // Returns `Uint8Array` of x cryptographically secure random bytes.
-  randomBytes: (bytesLength?: number) => Uint8Array;
-  // Converts Uint8Array to hex string
-  bytesToHex(uint8a: Uint8Array): string;
-  hexToBytes(hex: string): Uint8Array;
-  concatBytes(...arrays: Uint8Array[]): Uint8Array;
-  // Modular division over curve prime
-  mod: (number: number | bigint, modulo = CURVE.P): bigint;
-  // Modular inversion
-  invert(number: bigint, modulo?: bigint): bigint;
-
-  sha256: (message: Uint8Array) => Promise<Uint8Array>;
-  hmacSha256: (key: Uint8Array, ...messages: Uint8Array[]) => Promise<Uint8Array>;
-
-  // You can set up your synchronous methods for `signSync`/`signSchnorrSync` to work.
-  // The argument order is identical to async methods from above
-  sha256Sync: undefined;
-  hmacSha256Sync: undefined;
-
-  // BIP0340-style tagged hashes
-  taggedHash: (tag: string, ...messages: Uint8Array[]) => Promise<Uint8Array>;
-  taggedHashSync: (tag: string, ...messages: Uint8Array[]) => Uint8Array;
-
-  // 1. Returns cached point which you can use to pass to `getSharedSecret` or to `#multiply` by it.
-  // 2. Precomputes point multiplication table. Is done by default on first `getPublicKey()` call.
-  // If you want your first getPublicKey to take 0.16ms instead of 20ms, make sure to call
-  // utils.precompute() somewhere without arguments first.
-  precompute(windowSize?: number, point?: Point): Point;
+  normPrivateKeyToScalar: (p: PrivKey) => bigint;
+  randomPrivateKey: () => Bytes; // Uses CSPRNG https://developer.mozilla.org/en-US/docs/Web/API/Crypto/getRandomValues
+  isValidPrivateKey: (key: Hex) => boolean;
+  precompute(p: ProjectivePoint, windowSize?: number): ProjectivePoint;
 };
-
-secp256k1.CURVE.P // Field, 2 ** 256 - 2 ** 32 - 977
-secp256k1.CURVE.n // Order, 2 ** 256 - 432420386565659656852420866394968145599
-secp256k1.Point.BASE // new secp256k1.Point(Gx, Gy) where
-// Gx = 55066263022277343669578718895168534326250603453777594175500187360389116729240n
-// Gy = 32670510020758816978083085130507043184471273380659243275938904335757337482424n;
-
-// Elliptic curve point in Affine (x, y) coordinates.
-secp256k1.Point {
-  constructor(x: bigint, y: bigint);
-  // Supports compressed and non-compressed hex
-  static fromHex(hex: Uint8Array | string);
-  static fromPrivateKey(privateKey: Uint8Array | string | number | bigint);
-  static fromSignature(
-    msgHash: Hex,
-    signature: Signature,
-    recovery: number | bigint
-  ): Point | undefined {
-  toRawBytes(isCompressed = false): Uint8Array;
-  toHex(isCompressed = false): string;
-  equals(other: Point): boolean;
-  negate(): Point;
-  add(other: Point): Point;
-  subtract(other: Point): Point;
-  // Constant-time scalar multiplication.
-  multiply(scalar: bigint | Uint8Array): Point;
-}
-secp256k1.Signature {
-  constructor(r: bigint, s: bigint);
-  // DER encoded ECDSA signature
-  static fromDER(hex: Uint8Array | string);
-  // R, S 32-byte each
-  static fromCompact(hex: Uint8Array | string);
+class ProjectivePoint {
+  constructor(px: bigint, py: bigint, pz: bigint);
+  static readonly BASE: ProjectivePoint;
+  static readonly ZERO: ProjectivePoint;
+  static fromAffine(point: AffinePoint): ProjectivePoint;
+  static fromHex(hex: Hex): ProjectivePoint;
+  static fromPrivateKey(n: PrivKey): ProjectivePoint;
+  get x(): bigint;
+  get y(): bigint;
+  add(other: ProjectivePoint): ProjectivePoint;
   assertValidity(): void;
-  hasHighS(): boolean; // high-S sigs cannot be produced using { canonical: true }
-  toDERRawBytes(): Uint8Array;
-  toDERHex(): string;
-  toCompactRawBytes(): Uint8Array;
+  equals(other: ProjectivePoint): boolean;
+  multiply(n: bigint): ProjectivePoint;
+  negate(): ProjectivePoint;
+  subtract(other: ProjectivePoint): ProjectivePoint;
+  toAffine(): AffinePoint;
+  toHex(isCompressed?: boolean): string;
+  toRawBytes(isCompressed?: boolean): Bytes;
+}
+class Signature {
+  constructor(r: bigint, s: bigint, recovery?: number | undefined);
+  static fromCompact(hex: Hex): Signature;
+  readonly r: bigint;
+  readonly s: bigint;
+  readonly recovery?: number | undefined;
+  ok(): Signature;
+  hasHighS(): boolean;
+  normalizeS(): Signature;
+  recoverPublicKey(msgh: Hex): Point;
+  toCompactRawBytes(): Bytes;
   toCompactHex(): string;
 }
+CURVE; // curve prime; order; equation params, generator coordinates
 ```
 
 ## Security
@@ -455,18 +426,16 @@ is to minimize this attack vector.
 
 ## Speed
 
-Benchmarks measured with Apple M2 on MacOS 12 with node.js 18.8.
+Use [noble-curves](https://github.com/paulmillr/noble-curves) if you need even higher performance.
 
-    getPublicKey(utils.randomPrivateKey()) x 7,093 ops/sec @ 140μs/op
-    sign x 5,615 ops/sec @ 178μs/op
-    signSync (@noble/hashes) x 5,209 ops/sec @ 191μs/op
-    verify x 1,114 ops/sec @ 896μs/op
-    recoverPublicKey x 1,018 ops/sec @ 982μs/op
-    getSharedSecret aka ecdh x 665 ops/sec @ 1ms/op
-    getSharedSecret (precomputed) x 7,426 ops/sec @ 134μs/op
-    Point.fromHex (decompression) x 14,582 ops/sec @ 68μs/op
-    schnorr.sign x 805 ops/sec @ 1ms/op
-    schnorr.verify x 1,129 ops/sec @ 885μs/op
+Benchmarks measured with Apple M2 on MacOS 13 with node.js 20.
+
+    getPublicKey(utils.randomPrivateKey()) x 6,430 ops/sec @ 155μs/op
+    sign x 3,367 ops/sec @ 296μs/op
+    verify x 600 ops/sec @ 1ms/op
+    getSharedSecret x 505 ops/sec @ 1ms/op
+    recoverPublicKey x 612 ops/sec @ 1ms/op
+    Point.fromHex (decompression) x 9,185 ops/sec @ 108μs/op
 
 Compare to other libraries on M1 (`openssl` uses native bindings, not JS):
 
@@ -477,13 +446,11 @@ Compare to other libraries on M1 (`openssl` uses native bindings, not JS):
     sjcl#sign x 199 ops/sec
     openssl#sign x 4,243 ops/sec
     ecdsa#sign x 116 ops/sec
-    bip-schnorr#sign x 60 ops/sec
 
     elliptic#verify x 812 ops/sec
     sjcl#verify x 166 ops/sec
     openssl#verify x 4,452 ops/sec
     ecdsa#verify x 80 ops/sec
-    bip-schnorr#verify x 56 ops/sec
 
     elliptic#ecdh x 971 ops/sec
 

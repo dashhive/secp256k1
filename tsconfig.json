@@ -1,18 +1,8 @@
 {
+  "extends": "@paulmillr/jsbt/tsconfig.esm.json",
   "compilerOptions": {
-    "strict": true,
-    "declaration": true,
-    "declarationMap": false,
-    "target": "es2020",
-    "lib": ["es2020"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "lib",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
+    "outDir": ".",
+    "sourceMap": false
   },
   "include": ["index.ts"],
   "exclude": ["node_modules", "lib"]
